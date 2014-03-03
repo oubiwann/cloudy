@@ -1,129 +1,36 @@
-PROJECT = cloudy
-LIB = cloudy
-DEPS = ./deps
-BIN_DIR = ./bin
-EXPM = $(BIN_DIR)/expm
-LFE_DIR = $(DEPS)/lfe
-LFE_EBIN = $(LFE_DIR)/ebin
-LFE = $(LFE_DIR)/bin/lfe
-LFEC = $(LFE_DIR)/bin/lfec
-LFE_UTILS_DIR = $(DEPS)/lfe-utils
-LFEUNIT_DIR = $(DEPS)/lfeunit
-# Note that ERL_LIBS is for running this project in development and that
-# ERL_LIB is for installation.
-ERL_LIBS = $(LFE_DIR):$(LFE_UTILS_DIR):$(LFEUNIT_DIR):./
-SOURCE_DIR = ./src
-OUT_DIR = ./ebin
-TEST_DIR = ./test
-TEST_OUT_DIR = ./.eunit
-FINISH = -run init stop -noshell
+###########
+cloudy
+###########
 
-get-version:
-	@echo
-	@echo "Getting version info ..."
-	@echo
-	@echo -n app.src: ''
-	@erl -eval 'io:format("~p~n", [ \
-		proplists:get_value(vsn,element(3,element(2,hd(element(3, \
-		erl_eval:exprs(element(2, erl_parse:parse_exprs(element(2, \
-		erl_scan:string("Data = " ++ binary_to_list(element(2, \
-		file:read_file("src/$(LIB).app.src"))))))), []))))))])' \
-		$(FINISH)
-	@echo -n package.exs: ''
-	@grep version package.exs |awk '{print $$2}'|sed -e 's/,//g'
+Introduction
+============
 
-# Note that this make target expects to be used like so:
-#   $ ERL_LIB=some/path make get-install-dir
-#
-# Which would give the following result:
-#   some/path/$project-1.0.0
-#
-get-install-dir:
-	@echo $(ERL_LIB)/$(PROJECT)-$(shell make get-version)
+Add content to me here!
 
-$(BIN_DIR):
-	mkdir -p $(BIN_DIR)
+Dependencies
+------------
 
-$(EXPM): $(BIN_DIR)
-	curl -o $(EXPM) http://expm.co/__download__/expm
-	chmod +x $(EXPM)
+This project assumes that you have `rebar`_ installed somwhere in your
+``$PATH``.
 
-get-deps:
-	rebar get-deps
-	for DIR in $(wildcard $(DEPS)/*); \
-	do cd $$DIR; echo "Updating $$DIR ..."; \
-	git pull; cd - > /dev/null; done
+This project depends upon the following, which installed to the ``deps``
+directory of this project when you run ``make deps``:
 
-clean-ebin:
-	rm -f $(OUT_DIR)/*.beam
+* `LFE`_ (Lisp Flavored Erlang; needed only to compile)
+* `lfeunit`_ (needed only to run the unit tests)
 
-clean-eunit:
-	rm -rf $(TEST_OUT_DIR)
+Installation
+============
 
-compile: get-deps clean-ebin
-	rebar compile
+Add content to me here!
 
-compile-no-deps: clean-ebin
-	rebar compile skip_deps=true
+Usage
+=====
 
-compile-tests: clean-eunit
-	mkdir -p $(TEST_OUT_DIR)
-	ERL_LIBS=$(ERL_LIBS) $(LFEC) -o $(TEST_OUT_DIR) $(TEST_DIR)/*_tests.lfe
-	-ERL_LIBS=$(ERL_LIBS) $(LFEC) -o $(OUT_DIR) $(TEST_DIR)/testing-*.lfe
+Add content to me here!
 
-shell: compile
-	clear
-	@ERL_LIBS=$(ERL_LIBS) $(LFE) -pa $(TEST_OUT_DIR)
-
-shell-no-deps: compile-no-deps
-	clear
-	@ERL_LIBS=$(ERL_LIBS) $(LFE) -pa $(TEST_OUT_DIR)
-
-clean: clean-ebin clean-eunit
-	rebar clean
-
-check: compile compile-tests
-	@clear;
-	@rebar eunit verbose=1 skip_deps=true
-
-check-no-deps: compile-no-deps compile-tests
-	@clear;
-	@rebar eunit verbose=1 skip_deps=true
-
-run:
-	@ERL_LIBS=$(ERL_LIBS) $(LFE) -eval "application:start('cloudy')"
-
-daemon:
-	@ERL_LIBS=$(ERL_LIBS) $(LFE) \
-	-eval "application:start('cloudy')" -detached -noshell
-
-push-all:
-	git push --all
-	git push upstream --all
-	git push --tags
-	git push upstream --tags
-
-# Note that this make target expects to be used like so:
-#    $ ERL_LIB=some/path make install
-#
-install: INSTALLDIR=$(shell make get-install-dir)
-install: compile
-	if [ "$$ERL_LIB" != "" ]; \
-	then mkdir -p $(INSTALLDIR)/$(EBIN); \
-		mkdir -p $(INSTALLDIR)/$(SRC); \
-		cp -pPR $(EBIN) $(INSTALLDIR); \
-		cp -pPR $(SRC) $(INSTALLDIR); \
-	else \
-		echo "ERROR: No 'ERL_LIB' value is set in the env." \
-		&& exit 1; \
-	fi
-
-upload: $(EXPM) get-version
-	@echo "Package file:"
-	@echo
-	@cat package.exs
-	@echo
-	@echo "Continue with upload? "
-	@read
-	$(EXPM) publish
-
+.. Links
+.. -----
+.. _rebar: https://github.com/rebar/rebar
+.. _LFE: https://github.com/rvirding/lfe
+.. _lfeunit: https://github.com/lfe/lfeunit
