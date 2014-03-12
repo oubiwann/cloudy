@@ -5,7 +5,7 @@ cloudy
 Introduction
 ============
 
-Add content to me here!
+The sample project created as part of the `LFE Presntation for Erlang Factory 2014`_.
 
 Dependencies
 ------------
@@ -34,3 +34,4 @@ Add content to me here!
 .. _rebar: https://github.com/rebar/rebar
 .. _LFE: https://github.com/rvirding/lfe
 .. _lfeunit: https://github.com/lfe/lfeunit
+.. _LFE Presntation for Erlang Factory 2014: https://github.com/oubiwann/SFEF-2014-LFE
